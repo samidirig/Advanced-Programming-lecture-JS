@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Multiplication Table </title>
+
+  <style>
+    body { max-width: 500px; }
+    pre  { overflow-x: auto; }
+    input { width: 50px }
+  </style>
+</head>
+
+<body>
+
+<h2 id=title></h2>
+a = <input type=number id=a value=0 onChange="result()">
+&emsp;
+b = <input type=number id=b value=0 onChange="result()">
+&emsp;
+<span id=res></span>
+<pre id=out><b>Table</b></pre>
+
+<hr />
+<b>Sample code</b>
+<pre id=sample></pre>
+<hr />
+<p>Ref: <a href="https://www.mathsisfun.com/tables.html" 
+   target="NewTab">Multiplication Table </a>
+</p>
+<hr />
+<script>
+"use strict";
+function result(x){
+    let a1 = Number(a.value)
+    let b1 = Number(b.value)
+    res.innerText = "Result = "+(a1 * b1)
+}
+
+function power(x, y){
+    let result = '';
+    for(let i = 1; i<x+1; i++){
+        for (let j = 1; j < y+1; j++) {
+            result +=" "+ (i*j)
+        }
+        result += '\n'
+    }console.log(result)
+    return result
+}
+function doTable() {
+        document.write("<center><table border='1px'>");
+    for (let a = 1; a < 11; a++) {
+        document.write("<tr style='height:40px'>");
+        for (let b = 1; b < 11; b++) { 
+            document.write("<td style='width:40px'><center><font size='4'>" + a*b + "</center></font></td>");
+        }
+        document.write("</tr>");
+    }
+    document.write("</table></center>");
+}
+
+    title.innerText = document.title
+    sample.innerText = power+'\n'+doTable
+    out.innerText = power(a,b)
+    doTable()
+</script>
+
+</body>
+</html>
