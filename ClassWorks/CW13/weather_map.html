@@ -176,11 +176,6 @@ function init() {
     MAP.on('click', e => {console.log(e.latlng)})    
     //{}
 }
-function changeMap(){
-    MAP.on('click', e => {document.getElementById('konum').value = e.latlng['lat'].toFixed()+ "," 
-    + e.latlng['lng'].toFixed(); getLocationUser((String(e.latlng['lat']+"," + e.latlng['lng'])))});
-    
-}
 
 function showIcon(i) {
     const URL = "https://openweathermap.org/img/w/"
@@ -217,7 +212,7 @@ function getAPIkey() {
     }
 }
     err.style.display = "none"
-    getAPIkey(); askLocation(); init(); changeMap(); 
+    getAPIkey(); askLocation(); init();  
 </script>
 
 </body>
