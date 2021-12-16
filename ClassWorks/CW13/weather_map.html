@@ -161,8 +161,7 @@ async function askWeather() {
         +'\nZone '+(data.timezone/3600)
     console.log(hh, yy, 'Wind '+data.wind.deg+'° '+WIND[d])
 }
-var MAP;  
-var MAP;  //global
+var MAP; 
 function init() {
     //initial coordinates are given: 50. Yil Parki
     let p = {lat:lat, lng:lon}
@@ -177,8 +176,9 @@ function init() {
     MAP.on('click', e => {console.log(e.latlng)})    
     //{}
 }
-function clc(){
-    MAP.on('click', e => {document.getElementById('konum').value = e.latlng['lat'].toFixed()+ "," + e.latlng['lng'].toFixed(); getLocationUser((String(e.latlng['lat']+"," + e.latlng['lng'])))});
+function changeMap(){
+    MAP.on('click', e => {document.getElementById('konum').value = e.latlng['lat'].toFixed()+ "," 
+    + e.latlng['lng'].toFixed(); getLocationUser((String(e.latlng['lat']+"," + e.latlng['lng'])))});
     
 }
 
@@ -217,7 +217,7 @@ function getAPIkey() {
     }
 }
     err.style.display = "none"
-    getAPIkey(); askLocation(); init(); clc(); 
+    getAPIkey(); askLocation(); init(); changeMap(); 
 </script>
 
 </body>
