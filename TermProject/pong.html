@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Pong Game</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            width: 450px;
+            height: 280px;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="435" height="255" style="border:5px solid #778899;">
+    </canvas>
+</body>
+
+<script>
+    "use strict";
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#B0C4DE";
+
+    let ortaCizgiW = 2;
+    let ortaCizgiH = canvas.height;
+
+    let raketW = 5;
+    let raketH = 55;
+
+    let keyUpPressed = false;
+    let keyDownPressed = false;
+
+    // ortaCizgi
+    let ortaCizgi = {
+        x: canvas.width / 2 - ortaCizgiW / 2,
+        y: 0,
+        width: ortaCizgiW,
+        height: ortaCizgiH,
+        color: "#696969"
+    };
+
+    // oyuncu raket
+    let oyuncu = {
+        x: 5,
+        y: canvas.height / 2 - raketH / 2,
+        width: raketW,
+        height: raketH,
+        color: '#FFF',
+        score: 0
+    };
+    //bilgisayar
+    let bilgisayar = {
+        x: canvas.width - (raketW + 5),
+        y: canvas.height / 2 - raketH / 2,
+        width: raketW,
+        height: raketH,
+        color: '#FFF',
+        score: 0,
+    };
+    // ball
+    let ball = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        radius: 7,
+        speed: 7,
+        velocityX: 5,
+        velocityY: 5,
+        color: '#000000'
+    };
+    //draw ortaCizgi function
+    function drawOrtaCizgi() {
+        ctx.fillStyle = ortaCizgi.color;
+        ctx.fillRect(ortaCizgi.x, ortaCizgi.y, ortaCizgi.width, ortaCizgi.height);
+    }
+
+    //draw score function
+    function drawScore(x, y, score) {
+        ctx.fillStyle = '#696969';
+        ctx.font = '30px georgia-serif';
+        ctx.fillText(score, x, y);
+    }
+
+    //draw raket function
+    function drawRaket(x, y, width, height, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, width, height);
+    }
+
+    // draw ball function
+    function drawBall(x, y, radius, color) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    // draws the black board
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // draw ortaCizgi
+    drawOrtaCizgi();
+
+    // draw oyuncu score
+    drawScore(canvas.width / 4, canvas.height / 6, oyuncu.score);
+
+    // draw bilgisayar score
+    drawScore(3 * canvas.width / 4, canvas.height / 6, bilgisayar.score);
+
+    // draw oyuncu raket
+    drawRaket(oyuncu.x, oyuncu.y, oyuncu.width, oyuncu.height, oyuncu.color);
+
+    // draw bilgisayar raket
+    drawRaket (bilgisayar.x, bilgisayar.y, bilgisayar.width, bilgisayar.height, bilgisayar.color);
+
+    // draw ball
+    drawBall(ball.x, ball.y, ball.radius, ball.color);
+    
+    </script>
+
+</html>
