@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" href="../icon.jpeg">
+
   <title>Open Weather</title>
   <style>
     body {
@@ -12,7 +12,7 @@
     }
     svg, canvas {
         background: cyan;
-        font: 10px arial, sans-serif;
+        font: 10px arial, georgia-serif;
     }
     rect {
       fill: #9cf;
@@ -47,18 +47,15 @@
 
 <body>
 <h2>Using Canvas</h2>
-<canvas id=canvas width=380 height=400></canvas>
-
-<div>
-  Lat/Lon <input id=mahal type=text value="41 29">
-</div>
-
 <div id=main>
-<p id=yer>location</p>
-<p><img id=icon>
-<span id=hava>weather</span></p>
-</div>
-
+    <p id=yer>location</p>
+    <p><img id=icon>
+    <span id=hava>weather</span></p>
+    </div>
+    
+    <br>
+    
+    
 <div class=dar>
   <b>Detail</b>
   <pre id=detay>detail</pre>
@@ -67,6 +64,9 @@
   <b>Sun</b>
   <pre id=gunes>sunrise</pre>
 </div>
+<p>Latitude/Longitude: 
+    <input id="en-boy" type=string onChange="getLocationUser(value)" value="40,29">
+</p>
 <hr />
 <div>
 <p id=err>You need an API key for openweathermap.org 
@@ -75,7 +75,7 @@
 </p>
 </div>
 <b>Sample code</b>
-<pre id="sample">This text is not shown. Why?</pre>
+<pre id="sample"></pre>
 </body>
 <script>
 "use strict";
@@ -92,7 +92,7 @@ async function toJSON(url) {
     return r.json()
 }
 // Location
-var lat, lon;  //global values
+var lat = 41.5, lon=28.16;  //global values
 async function askLocation() {
     let name = 'geolocation'
     let result = await navigator.permissions.query({name})
@@ -115,6 +115,14 @@ function getLocation1(p) { //Accurate
     lat = p.coords.latitude; lon = p.coords.longitude;
     askWeather()
 }
+function getLocationUser(location){
+    let loc2 = location.split(",")
+    lat = loc2[0];
+    lon = loc2[1];
+    askWeather()
+    MAP.setView([lat, lon], 10)
+   
+}
 // Weather
 var accessKey;
 async function askWeather() {
@@ -126,7 +134,7 @@ async function askWeather() {
     gunes.innerText = ''
     let data = await toJSON(url)
 //  fetch(url).then(r => r.json()).then(showWeather)
-//}
+// }
 // function showWeather(data) {
     let w = data.weather[0]; showIcon(w.icon)
     let celsius = convert(data.main.temp).toFixed(0)
@@ -134,12 +142,12 @@ async function askWeather() {
     let yy = data.name+', '+sys.country
     hava.innerText = hh; yer.innerText = yy
     lat = data.coord.lat; lon = data.coord.lon
-    mahal.value = lat.toFixed(2)+", "+lon.toFixed(2)
+    
     let wind = (3.6*data.wind.speed).toFixed(0)
     let pres = (0.750062*data.main.pressure).toFixed(0)
     const WIND = ['N','NE','E','SE','S','SW','W','NW','N']
     let d = (data.wind.deg/45).toFixed(0)
-    detay.innerText = hh  //+'\n'+yy +'\n['+mahal.value+"]"
+    detay.innerText = hh  
         +'\nWind  '+wind+' km/h '+WIND[d]
         +'\nPressure  '+pres+' mm'
         +'\nHumidity  %'+data.main.humidity
@@ -150,15 +158,12 @@ async function askWeather() {
         +'\nZone '+(data.timezone/3600)
     console.log(hh, yy, 'Wind '+data.wind.deg+'° '+WIND[d])
 }
-let resultWheather = askWeather();
 
 function showIcon(i) {
     const URL = "https://openweathermap.org/img/w/"
     icon.src = URL+i+".png"
-    document.querySelector('link').href = icon.src
+    //document.querySelector('link').href = icon.src
 }
-let resultIcon = showIcon();
-
 function convert(kelvin){
     return (kelvin - 273.15);
     //return celsius*1.8 + 32
@@ -188,29 +193,16 @@ function getAPIkey() {
         accessKey = askUser()
     }
 }
-function draw() { //on canvas
-    const cx = canvas.getContext("2d");
-    cx.beginPath(); cx.lineWidth = 5;
-    cx.fill(); cx.stroke();
-    cx.fillText(resultWheather, 120,105);
-    cx.fillText(resultIcon, 120,55);
-    cx.fillText(toHM(), 120, 155);
-    cx.fillText(error(), 120, 170);
-    
-}
+
 
     err.style.display = "none"
     getAPIkey(); askLocation()
-mahal.onkeyup = e => {
-  let t = e.target
-  if (e.keyCode === 13) {
-    [lat, lon] = mahal.value.split(/[ ,]+/)
-    askWeather()
-  }
-  if (e.keyCode === 27) t.blur()
-}
-sample.innerText = draw + '\n';
-draw();
+    sample.innerText = "let d = (data.wind.deg/45).toFixed(0) \ndetay.innerText = hh  \n" +
+    "'\nWind  '+wind+' km/h '+WIND[d]\n +'\nPressure  '+pres+' mm'\n +'\nHumidity  %'+data.main.humidity" +
+    "\nlet {sunrise, sunset} = sys, noon = (sunrise+sunset)/2 \n "+
+    "gunes.innerText = 'Rise'+toHM(sunrise+data.timezone) \n     "+
+    "+'\nNoon '+toHM(noon+data.timezone)+'\nSet'+toHM(sunset+data.timezone) \n  "+
+    "'\nZone '+(data.timezone/3600) \nconsole.log(hh, yy, 'Wind '+data.wind.deg+'° '+WIND[d])"
 </script>
 
 </body>
