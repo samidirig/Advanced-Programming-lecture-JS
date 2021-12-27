@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
     <title>Pong Game</title>
+
     <style>
         * {
             padding: 0;
@@ -24,8 +25,12 @@
 </head>
 
 <body>
+    <h2 id=title></h2>
     <canvas id="canvas" width="435" height="255" style="border:5px solid #778899;">
     </canvas>
+    <canvas id="canvas2" width="439" height="30" style="border:2px solid #778899;">
+    </canvas>
+    
     <p></p>
     <b>How to Play?</b>
     <pre id=sample></pre>
@@ -54,7 +59,7 @@
 
     let keyUpPressed = false;
     let keyDownPressed = false;
-    
+    let spacePressed = false;
     // ortaCizgi
     let ortaCizgi = {
         x: canvas.width / 2 - ortaCizgiW / 2,
@@ -123,9 +128,13 @@
 
     window.addEventListener('keydown', keyDownHandler);
     window.addEventListener('keyup', keyUpHandler);
-
+    window.addEventListener('space', keyUpHandler);
     function keyDownHandler(event) {
         switch (event.keyCode) {
+            // "space" key
+            case 32:
+                spacePressed = true;
+                break;
             // "up arrow" key
             case 38:
                 keyUpPressed = true;
@@ -257,12 +266,13 @@
     var intervalTime = 1000/FRAME_RATE;
     // gameLoop
     function gameLoop() {
-
-        update();
+        if(spacePressed){
+            update();
+        }
         render();
-
     }
-    sample.innerText = "Pres up key on keaybord to go UP.\n" + "Pres down key on keyboard to go DOWN."; 
+    title.innerText = document.title
+    sample.innerText = "Press 'Space' to start game.\n" + "Press 'up key' on keaybord to go UP.\n" + "Press 'down key' on keyboard to go DOWN."; 
     setInterval(gameLoop, 1000 / 60);
     </script>
 
