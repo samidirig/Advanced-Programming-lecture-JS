@@ -8,28 +8,43 @@
     <style>
         * {
             padding: 0;
-            margin: 0;
+            margin: 5;
         }
 
         body {
             width: 450px;
             height: 280px;
-            display: flex;
-            align-items: center;
+            background-color: bisque;
         }
+        #seconds, #tens{
+            font-size:2em;
+        }
+
     </style>
 </head>
 
 <body>
     <canvas id="canvas" width="435" height="255" style="border:5px solid #778899;">
     </canvas>
+    <p></p>
+    <b>How to Play?</b>
+    <pre id=sample></pre>
+    <hr />
+    <p>Ref: 
+        <a href="https://www.youtube.com/watch?v=eI9idPTT0c4" 
+           target="NewTab">HTML5 Canvas and JavaScript</a>
+    </p>
+    <p>Ref2: 
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_usage" 
+           target="NewTab">Basic usage of canvas</a>
+    </p>
+    
 </body>
 
 <script>
     "use strict";
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
-    ctx.fillStyle = "#B0C4DE";
 
     let ortaCizgiW = 2;
     let ortaCizgiH = canvas.height;
@@ -39,7 +54,7 @@
 
     let keyUpPressed = false;
     let keyDownPressed = false;
-
+    
     // ortaCizgi
     let ortaCizgi = {
         x: canvas.width / 2 - ortaCizgiW / 2,
@@ -83,13 +98,6 @@
         ctx.fillRect(ortaCizgi.x, ortaCizgi.y, ortaCizgi.width, ortaCizgi.height);
     }
 
-    //draw score function
-    function drawScore(x, y, score) {
-        ctx.fillStyle = '#696969';
-        ctx.font = '30px georgia-serif';
-        ctx.fillText(score, x, y);
-    }
-
     //draw raket function
     function drawRaket(x, y, width, height, color) {
         ctx.fillStyle = color;
@@ -105,26 +113,157 @@
         ctx.fill();
     }
 
-    // draws the black board
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // draw ortaCizgi
-    drawOrtaCizgi();
+    //draw score function
+    function drawScore(x, y, score) {
+        ctx.fillStyle = '#696969';
+        ctx.font = '30px georgia-serif';
+        ctx.fillText(score, x, y);
+    }
 
-    // draw oyuncu score
-    drawScore(canvas.width / 4, canvas.height / 6, oyuncu.score);
 
-    // draw bilgisayar score
-    drawScore(3 * canvas.width / 4, canvas.height / 6, bilgisayar.score);
+    window.addEventListener('keydown', keyDownHandler);
+    window.addEventListener('keyup', keyUpHandler);
 
-    // draw oyuncu raket
-    drawRaket(oyuncu.x, oyuncu.y, oyuncu.width, oyuncu.height, oyuncu.color);
+    function keyDownHandler(event) {
+        switch (event.keyCode) {
+            // "up arrow" key
+            case 38:
+                keyUpPressed = true;
+                break;
+            // "down arrow" key
+            case 40:
+                keyDownPressed = true;
+                break;
+        }
+    }
+    function keyUpHandler(event) {
+        switch (event.keyCode) {
+            // "up arraow" key
+            case 38:
+                keyUpPressed = false;
+                break;
+            // "down arrow" key
+            case 40:
+                keyDownPressed = false;
+                break;
+        }
+    }
+    // reset the ball
+    function reset() {
+        // reset ball's value to older values
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.speed = 4;
 
-    // draw bilgisayar raket
-    drawRaket (bilgisayar.x, bilgisayar.y, bilgisayar.width, bilgisayar.height, bilgisayar.color);
+        // changes the direction of ball
+        ball.velocityX = -ball.velocityX;
+        ball.velocityY = -ball.velocityY;
+    }
 
-    // draw ball
-    drawBall(ball.x, ball.y, ball.radius, ball.color);
-    
+    // collision Detect function
+    function collisionDetect(player, ball) {
+        // returns true or false
+        player.top = player.y;
+        player.right = player.x + player.width;
+        player.bottom = player.y + player.height;
+        player.left = player.x;
+
+        ball.top = ball.y - ball.radius;
+        ball.right = ball.x + ball.radius;
+        ball.bottom = ball.y + ball.radius;
+        ball.left = ball.x - ball.radius;
+
+        return ball.left < player.right && ball.top < player.bottom && ball.right > player.left && ball.bottom > player.top;
+    }
+
+    // update function
+    function update() {
+        // move oyuncu
+        if (keyUpPressed && oyuncu.y > 0) {
+            oyuncu.y -= 7;
+        } else if (keyDownPressed && (oyuncu.y < canvas.height - oyuncu.height)) {
+            oyuncu.y += 7;
+        }
+
+        // if ball hits top or bottom wall
+        if (ball.y + ball.radius >= canvas.height || ball.y - ball.radius <= 0) {
+            ball.velocityY = -ball.velocityY;
+        }
+
+        // if ball hit right wall
+        if (ball.x + ball.radius >= canvas.width) {
+            oyuncu.score += 1;
+            reset();
+        }
+
+        // if ball hit left wall
+        if (ball.x - ball.radius <= 0) {
+            bilgisayar.score += 1;
+            reset();
+        }
+
+        // move the ball
+        ball.x += ball.velocityX;
+        ball.y += ball.velocityY;
+
+        // move bilgisayar 
+        bilgisayar.y += ((ball.y - bilgisayar.y + bilgisayar.height / 2)) * 0.09;
+
+        // collision detection on paddles
+        let player = (ball.x < canvas.width / 2) ? oyuncu : bilgisayar;
+
+        if (collisionDetect(player, ball)) {
+
+            // default angle is 0deg in Radian
+            let angle = 0;
+
+            // if ball hit the top of paddle
+            if (ball.y < (player.y + player.height / 2)) {
+                // then -1 * Math.PI / 4 = -45deg
+                angle = -1 * Math.PI / 4;
+            } else if (ball.y > (player.y + player.height / 2)) {
+                // if it hit the bottom of paddle
+                // then angle will be Math.PI / 4 = 45deg
+                angle = Math.PI / 4;
+            }
+            /* change velocity of ball according to on which paddle the ball hitted */
+            ball.velocityX = (player === oyuncu ? 1 : -1) * ball.speed * Math.cos(angle);
+            ball.velocityY = ball.speed * Math.sin(angle);
+
+            // increase ball speed
+            ball.speed += 0.1;
+        }
+    }
+
+    // render function draws everything on to canvas
+    function render() {
+        ctx.fillStyle = "#B0C4DE"; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // draw ortaCizgi
+        drawOrtaCizgi();
+        // draw oyuncu score
+        drawScore(canvas.width / 4, canvas.height / 6, oyuncu.score);
+        // draw bilgisayar score
+        drawScore(3 * canvas.width / 4, canvas.height / 6, bilgisayar.score);
+        // draw oyuncu paddle
+        drawRaket(oyuncu.x, oyuncu.y, oyuncu.width, oyuncu.height, oyuncu.color);
+        // draw bilgisayar paddle
+        drawRaket(bilgisayar.x, bilgisayar.y, bilgisayar.width, bilgisayar.height, bilgisayar.color);
+        // draw ball
+        drawBall(ball.x, ball.y, ball.radius, ball.color);
+    }
+    const FRAME_RATE = 30;
+    var intervalTime = 1000/FRAME_RATE;
+    // gameLoop
+    function gameLoop() {
+
+        update();
+        render();
+
+    }
+    sample.innerText = "Pres up key on keaybord to go UP.\n" + "Pres down key on keyboard to go DOWN."; 
+    setInterval(gameLoop, 1000 / 60);
     </script>
 
 </html>
